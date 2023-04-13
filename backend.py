@@ -12,4 +12,4 @@ app.include_router(slow.router)
 
 @app.get("/")
 def hi():
-    return "hi, go to /docs"
+    return "How are u?"
