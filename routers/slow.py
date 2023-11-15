@@ -19,13 +19,19 @@ def metric_send(metric, metric_time=3):  # менять на async def можн�
     # эту часть менять нельзя ^^^^^^^
 
 
-def process_something_long(data):  # менять на async def можно
+def process_something_long(data, log=False):  # менять на async def можно
     # эту часть менять нельзя vvvvvvv
     start = time.time()
     arr = [i for i in range(N_ARRAY * data['time'])]
+    random_array = []
     for a in arr:
         for b in arr:
             _ = random.random() * random.random()
+            if log:
+                random_array.append(str(_))
+    if log:
+        with open("./random.log", "w") as f:
+            f.write("\n".join(random_array))
     end = time.time()
     print(f"[{time.time()}] Done processing: {data['input']} in {end - start} seconds")
     return "result " + data['input']
@@ -33,7 +39,9 @@ def process_something_long(data):  # менять на async def можно
 
 
 @router.get("/")
-def slow(background_tasks: BackgroundTasks):  # менять на async def можно
+def slow(
+    log: bool,
+    background_tasks: BackgroundTasks):  # менять на async def можно
     start = time.time()
     data = [
         {
@@ -57,7 +65,7 @@ def slow(background_tasks: BackgroundTasks):  # менять на async def мо
     result = []  # ["result 3 sec.", "result 4 sec.", "result 5 sec."]
 
     for d in data:
-        result.append(process_something_long(d))
+        result.append(process_something_long(d, log))
 
     # работу со вычислением времени трогать нельзя – время работы ручки должно быть близко к 5 секундам 
     end = time.time()
